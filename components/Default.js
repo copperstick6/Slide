@@ -11,7 +11,8 @@ import {
   AsyncStorage,
   Image
 } from 'react-native';
-
+import Toast from 'react-native-simple-toast'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export class Default extends Component {
   static navigationOptions = {
@@ -19,22 +20,47 @@ export class Default extends Component {
   };
   constructor(props){
 	super(props)
+	this.state = {
+		flight: false,
+		visible: false
+	}
 	this.navigateQR = this.navigateQR.bind(this)
 	this.navigateManual = this.navigateManual.bind(this)
   }
   navigateQR(){
-	const {navigate} = this.props.navigation
-	navigate("QrCamera")
+	  if(!this.state.flight){
+		  Toast.show("Please enter a valid flight and time via Settings")
+	  }
+	  else{
+		  const {navigate} = this.props.navigation
+		  navigate("QrCamera")
+	  }
+
   }
   navigateManual(){
 	const {navigate} = this.props.navigation
 	navigate("Manual")
   }
+  componentWillMount(){
+	  AsyncStorage.getItem("fd_json").then(function(value){
+	  console.log(value)
+	  if(!(value === null)){
+		this.setState({flight: true})
+	  }
+	  this.setState({visible: false})
+	}.bind(this))
+  }
 
 
   render() {
+	 let flight_details  = null
+	 if(this.state.flight){
+		 flight_details = <Button onPress={this.navigateManual} title="Flight Details">Navigate</Button>
+	 }
 	return (
 	  <View style = {styles.container}>
+	  <Spinner visible={this.state.visible}>
+			</Spinner>
 	  <Text style={styles.welcome}>
 	  Hi, Welcome to Slide
 	  </Text>
@@ -45,6 +71,9 @@ export class Default extends Component {
 	  <Text>{"\n"}</Text>
 	  <Text>{"\n"}</Text>
 	  <Button onPress={this.navigateQR} title="Camera">Navigate</Button>
+	  <Text>{"\n"}</Text>
+	  <Text>{"\n"}</Text>
+	  {flight_details}
 	  </View>
 	)
   }

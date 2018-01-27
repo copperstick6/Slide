@@ -11,7 +11,6 @@ import {
   AsyncStorage,
   Image
 } from 'react-native';
-import {Volunteer} from './volunteer'
 
 import {Default} from './Default'
 import API from '../config/api.json'
