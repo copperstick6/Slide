@@ -31,7 +31,7 @@ export class Entry extends Component {
 	const { navigate } = this.props.navigation;
 	return (
 	  <View style = {styles.container}>
-	  <Image source={require('../cumin.png')} style = {styles.image} />
+	  <Image source={require('../images.jpeg')} style = {styles.image} />
 	  <Default navigation = {this.props.navigation} />
 	  </View>
 
