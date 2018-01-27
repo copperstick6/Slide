@@ -1,4 +1,4 @@
-package com.cumin;
+package com.slide;
 
 import android.app.Application;
 

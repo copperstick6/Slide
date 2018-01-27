@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>cumin</string>
+	<string>Slide</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to Scan Barcodes</string>
 	<key>CFBundleExecutable</key>
