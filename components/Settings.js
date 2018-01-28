@@ -30,7 +30,8 @@ export class Settings extends Component {
 	  text: null,
 	  date: null,
 	  cur_date: null,
-	  visible: true
+	  visible: true,
+	  location: null
 	};
 	this.saveEmail = this.saveEmail.bind(this)
   }
@@ -47,9 +48,18 @@ export class Settings extends Component {
 			AsyncStorage.setItem("fd_json", null)
 		}
 		else{
-			Toast.show("Flight Details Successfully Retrieved.")
+			console.log(this.state.location)
+			if(responseJson['origin'] != this.state.location || responseJson['destination'] != this.state.location){
+				Toast.show("Your current location " + this.state.location + " does not match the origin: " + responseJson['origin'] + " or destination: " + responseJson['destination'] + ". Make sure this is going on the correct flight." )
+				AsyncStorage.setItem("fd_json", null)
+			}
+			else{
+
+				Toast.show("Flight Details Successfully Retrieved.")
+			}
 			AsyncStorage.setItem("flight_number", this.state.text)
 			AsyncStorage.setItem("flight_date", this.state.date)
+			AsyncStorage.setItem("current_location", this.state.location)
 			AsyncStorage.setItem("fd_json", JSON.stringify(responseJson))
 			const {navigate} = this.props.navigation
 			navigate("Home")
@@ -60,14 +70,16 @@ export class Settings extends Component {
   componentWillMount(){
 
 	var moment = require('moment');
-	  AsyncStorage.multiGet(["flight_number", "flight_date"], (err, stores) => {
+	  AsyncStorage.multiGet(["flight_number", "flight_date", "current_location"], (err, stores) => {
 		stores.map((result, i, store) => {
 			console.log("Store 0: " + store[0][1] + " Store 1: " + store[1][1])
 		  if(store[0][1] != null)
 			  this.setState({text: store[0][1]})
-
+		  console.log(store[2][1])
 		  if(store[1][1] != null)
 				this.setState({date: store[1][1]})
+		   if(store[2][1] != null)
+			  this.setState({location: store[2][1]})
 		});
 		current_date = String(moment().year()) + "-" + (parseInt(moment().month()) + 1) + "-" + String(moment().dates())
 		this.setState({ cur_date: current_date, visible: false })
@@ -86,6 +98,14 @@ export class Settings extends Component {
 		style={{height: 40, width:300}}
 		onChangeText={(text) => this.setState({text})}
 		value={this.state.text}
+	  />
+	  <Text style={styles.welcome}>
+	  Current Location
+	  </Text>
+	  <TextInput
+		style={{height: 40, width:300}}
+		onChangeText={(location) => this.setState({location})}
+		value={this.state.location}
 	  />
 	  <Text>{"\n"}</Text>
 	  <Text style={styles.welcome}>

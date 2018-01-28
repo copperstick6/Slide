@@ -1,61 +1,58 @@
 import React, { Component } from 'react';
-import { TextInput, StyleSheet, View, Text, Button } from 'react-native';
+import { TextInput, StyleSheet, View, Text, Button, AsyncStorage } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export class ManualInput extends Component {
   static navigationOptions = {
-    title: 'Manual Input',
+	title: 'Manual Input',
   };
   constructor(props) {
-    super(props);
-    this.state = { text: '' };
-    this.confirmationScreen = this.confirmationScreen.bind(this)
-    this.resetState = this.resetState.bind(this)
-  }
-  resetState(){
-    this.setState({text: ''})
-  }
-  confirmationScreen(){
-    const { navigate } = this.props.navigation;
-    navigate("Confirmation", {email: this.state.text, resetState: this.resetState})
-    console.log("pressed")
+	super(props);
+	this.state = { full_json: '', visible: true };
   }
 
+  componentWillMount(){
+	  AsyncStorage.getItem("fd_json").then(function(value){
+	  this.setState({full_json: value, visible: false})
+	}.bind(this))
+  }
   render() {
-    return (
-      <View style={styles.container}>
-      <Text style = {styles.welcome}>
-      Please enter the email address below.
-      </Text>
-      <TextInput
-        style={{height: 40, width:300}}
-        onChangeText={(text) => this.setState({text})}
-        value={this.state.text}
-      />
-      <Text style = {styles.welcome}>
-      </Text>
-      <Button onPress={this.confirmationScreen} title="Next"></Button>
-      </View>
+	  let deets = null
+	  let button = null
 
-    );
+	  if(!this.state.visible){
+		  json_data = JSON.parse(this.state.full_json)
+		  deets = <Text style = {styles.welcome}>Flight Number: {json_data['flightNumber']} {"\n"} Flight going from {json_data['origin']} to {json_data['destination']} {"\n"}Flight time is {json_data['departureTime']} to {json_data['arrivalTime']}. {"\n"} Flight is currently {json_data['flightStatus']}</Text>
+		  button = <Button onPress={() => this.props.navigation.navigate('Home')} title="Back"></Button>
+	  }
+	return (
+	  <View style={styles.container}>
+	  <Spinner visible={this.state.visible}>
+			</Spinner>
+	  {deets}
+	  {button}
+	  </View>
+
+	);
   }
 }
 
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+	flex: 1,
+	justifyContent: 'center',
+	alignItems: 'center',
+	backgroundColor: '#F5FCFF',
   },
   welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+	fontSize: 20,
+	textAlign: 'center',
+	margin: 10,
   },
   instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+	textAlign: 'center',
+	color: '#333333',
+	marginBottom: 5,
   },
 });
